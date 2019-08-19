@@ -4,6 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="whiteelephant.com.mapsexample.PlaceSearchActivity">
+    tools:context="com.kc.travelbuddy.MapsActivity">
 
 </android.support.constraint.ConstraintLayout>
