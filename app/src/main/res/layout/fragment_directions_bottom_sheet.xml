@@ -10,7 +10,7 @@
     android:visibility="gone"
     android:background="@color/bg_clr"
     app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
-    tools:context="whiteelephant.com.mapsexample.DirectionsBottomSheet">
+    tools:context="com.kc.travelbuddy.MapsActivity">
 
 
     <android.support.v7.widget.RecyclerView
