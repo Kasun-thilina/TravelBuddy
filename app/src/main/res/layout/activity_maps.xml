@@ -27,12 +27,6 @@
             app:cardCornerRadius="3dp"
             app:contentPadding="8dp">
 
-        <fragment android:id="@+id/autocomplete_fragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
-            />
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -88,6 +82,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
+
                         <android.support.design.widget.TextInputEditText
                             android:id="@+id/etDrop_location"
                             android:layout_width="match_parent"
@@ -141,6 +136,48 @@
                             android:textSize="15sp" />
                     </android.support.design.widget.TextInputLayout>
                 </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/drop" />
+
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/txt_input_time"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+
+                        <android.support.design.widget.TextInputEditText
+                            android:id="@+id/etTravel_Time"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:background="@drawable/bg_curved_white"
+                            android:focusable="false"
+                            android:fontFamily="sans-serif-condensed"
+                            android:hint="@string/travel_time"
+                            android:inputType="none"
+                            android:maxLines="1"
+                            android:padding="10dp"
+                            android:singleLine="true"
+                            android:textColor="@color/txt_strong"
+                            android:textSize="15sp" />
+                    </android.support.design.widget.TextInputLayout>
+                </LinearLayout>
+                <Button
+                    android:id="@+id/btnSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/search"
+                    android:textSize="15sp"
+                    />
 
             </LinearLayout>
         </android.support.v7.widget.CardView>
