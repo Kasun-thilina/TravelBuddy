@@ -16,7 +16,6 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -37,14 +36,12 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 
 import java.io.IOException;
@@ -66,6 +63,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int AUTOCOMPLETE_REQUEST_CODE_FOR_START=500;
     private static final int AUTOCOMPLETE_REQUEST_CODE_FOR_END=700;
     private Location location;
+
     Boolean locationFound=false;
     String apiKey ;
     View mapView;
@@ -109,6 +107,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                startActivity(new Intent(MapsActivity.this,SearchResultActivity.class));
                 if(startLocation==null)
                 {
                     Toast.makeText(MapsActivity.this, "Please Input Start Location to Continue", Toast.LENGTH_LONG).show();
@@ -126,7 +125,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Toast.makeText(MapsActivity.this, "Please Input Travel Time to Continue", Toast.LENGTH_LONG).show();
                 }
                 else {
-                    final Intent searchActivityIntent=new Intent(MapsActivity.this,SearchActivity.class);
+                    final Intent searchActivityIntent=new Intent(MapsActivity.this, SearchResultActivity.class);
                     Bundle values = new Bundle();
                     values.putParcelable("startLocation", startLocation);
                     values.putParcelable("endLocation", endLocation);
@@ -329,7 +328,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
     private void updateLabel(Calendar myCalender) {
         travelDate=myCalender;
-        String myFormat = "dd/MM/yyyy"; //In which you need put here
+        String myFormat = "yyyy-MM-dd"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
         etTravelDate.setText(sdf.format(myCalender.getTime()));
     }
@@ -360,7 +359,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             am_pm = "PM";
 
                         String strHrsToShow = (travelTime.get(Calendar.HOUR) == 0) ?"12":travelTime.get(Calendar.HOUR)+"";
-                        etTravelTime.setText( strHrsToShow+":"+travelTime.get(Calendar.MINUTE)+" "+am_pm);
+                        //etTravelTime.setText( strHrsToShow+":"+travelTime.get(Calendar.MINUTE)+" "+am_pm);
+                        etTravelTime.setText(selectedHour+":"+selectedMinute);
                     }
                 }, hour, minute, false);//Yes 24 hour time
                 mTimePicker.setTitle("Select Travelling Time");
