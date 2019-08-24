@@ -73,6 +73,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     AutocompleteSupportFragment autocompleteSupportFragment;
     LatLng startLocation,endLocation;
     Calendar travelTime,travelDate;
+    String finalDate,finalTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,7 +108,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MapsActivity.this,SearchResultActivity.class));
+                //startActivity(new Intent(MapsActivity.this,SearchResultActivity.class));
                 if(startLocation==null)
                 {
                     Toast.makeText(MapsActivity.this, "Please Input Start Location to Continue", Toast.LENGTH_LONG).show();
@@ -130,8 +131,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     values.putParcelable("startLocation", startLocation);
                     values.putParcelable("endLocation", endLocation);
                     searchActivityIntent.putExtra("locations",values);
-                    searchActivityIntent.putExtra("travelDate",travelDate.toString());
-                    searchActivityIntent.putExtra("travelTime",travelTime.toString());
+                    searchActivityIntent.putExtra("travelDate",finalDate);//YYYY-MM-DD
+                    searchActivityIntent.putExtra("travelTime",finalTime);//HH:MM
                     startActivity(searchActivityIntent);
                 }
             }
@@ -161,7 +162,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG);
         // Start the autocomplete intent.
         Intent intent = new Autocomplete.IntentBuilder(
-                AutocompleteActivityMode.FULLSCREEN, fields).setCountry("LK")
+                AutocompleteActivityMode.OVERLAY, fields).setCountry("LK")
                 .build(this);
         if (whatClicked==AUTOCOMPLETE_REQUEST_CODE_FOR_START) {
             startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE_FOR_START);
@@ -331,6 +332,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String myFormat = "yyyy-MM-dd"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
         etTravelDate.setText(sdf.format(myCalender.getTime()));
+        finalDate=sdf.format(myCalender.getTime());
     }
     /**
      * Time Picker
@@ -360,7 +362,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                         String strHrsToShow = (travelTime.get(Calendar.HOUR) == 0) ?"12":travelTime.get(Calendar.HOUR)+"";
                         //etTravelTime.setText( strHrsToShow+":"+travelTime.get(Calendar.MINUTE)+" "+am_pm);
-                        etTravelTime.setText(selectedHour+":"+selectedMinute);
+                        finalTime=selectedHour+":"+selectedMinute;
+                        etTravelTime.setText(finalTime);
+
                     }
                 }, hour, minute, false);//Yes 24 hour time
                 mTimePicker.setTitle("Select Travelling Time");

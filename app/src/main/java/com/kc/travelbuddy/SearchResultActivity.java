@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class SearchResultActivity extends AppCompatActivity {
     private static final String TAG = "SearchResultActivity";
@@ -37,56 +38,50 @@ public class SearchResultActivity extends AppCompatActivity {
     private HashMap<String,List<String>> listHashMap;
     private ArrayList<Double> latitudeList;
     private ArrayList<Double> longitudeList;
+    private ArrayList<String> summaryList;
+    private ArrayList<String> predictionList;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_result);
-        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-        DecodeAdress decodeAdress=new DecodeAdress();
         latitudeList=new ArrayList<>();
         longitudeList=new ArrayList<>();
 
-    /*    travelTime=getIntent().getStringExtra("travelTime");
+        travelTime=getIntent().getStringExtra("travelTime");
         travelDate=getIntent().getStringExtra("travelDate");
         Bundle bundle = getIntent().getParcelableExtra("locations");
         startLocation=bundle.getParcelable("startLocation");
         endLocation=bundle.getParcelable("endLocation");
-        Log.i(TAG, "travelTime"+travelTime);
-        Log.i(TAG, "travelDate"+travelDate);
-        Log.i(TAG, "startLocation"+startLocation);
-        Log.i(TAG, "endLocation"+endLocation);
+        Log.i(TAG, "travelTime: "+travelTime);
+        Log.i(TAG, "travelDate: "+travelDate);
+        Log.i(TAG, "startLocation: "+startLocation);
+        Log.i(TAG, "endLocation: "+endLocation);
 
 
-        String cityName=decodeAdress.getDecodedCityName(startLocation.latitude,startLocation.longitude,geocoder);
-        Log.i(TAG, "####cityName"+cityName);
-
-        //Find the main cities*/
+        //Find the main cities
         findCities(startLocation,endLocation);
-        getWeather();
-
         expandableListView=findViewById(R.id.lvExpandable);
-        expandableListAdapter=new ExpandableListAdapter(this,lisDataHeader,listHashMap);
-        expandableListView.setAdapter(expandableListAdapter);
+        //expandableListAdapter=new ExpandableListAdapter(this,lisDataHeader,listHashMap);
+        //expandableListView.setAdapter(expandableListAdapter);
 
     }
 
     private void findCities(LatLng startLocation, LatLng endLocation) {
-        /*ROUTEURL="https://route.api.here.com/routing/7.2/calculateroute.json?" +
+        ROUTEURL="https://route.api.here.com/routing/7.2/calculateroute.json?" +
                 "app_id=cMNYP4N3NoQ43gRxNx0c&app_code=DLhtnJkXtQMH02R0uUr3Eg&waypoint0" +
                 "=geo!"+startLocation.latitude+","+startLocation.longitude+"&waypoint1" +
-                "=geo!"+endLocation.latitude+","+endLocation.longitude+"&mode=fastest;car;traffic:disabled";*/
-        final Double latitude=7.604613;
+                "=geo!"+endLocation.latitude+","+endLocation.longitude+"&mode=fastest;car;traffic:disabled";
+        /*Double latitude=7.604613;
         Double stLong=80.072521;
         Double endLat=7.2946291;
         Double endLong=80.5907617;
         ROUTEURL="https://route.api.here.com/routing/7.2/calculateroute.json?" +
                 "app_id=cMNYP4N3NoQ43gRxNx0c&app_code=DLhtnJkXtQMH02R0uUr3Eg&waypoint0" +
                 "=geo!"+latitude+","+stLong+"&waypoint1" +
-                "=geo!"+endLat+","+endLong+"&mode=fastest;car;traffic:disabled";
+                "=geo!"+endLat+","+endLong+"&mode=fastest;car;traffic:disabled";*/
         requestQueue= Volley.newRequestQueue(SearchResultActivity.this);
-
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.GET,
                 ROUTEURL,
@@ -123,7 +118,7 @@ public class SearchResultActivity extends AppCompatActivity {
                                         Log.d(TAG, "latitude : " + tempLat);
                                     }
                                 }
-
+                                getWeather();
                             }
                         }catch (JSONException e){
                             e.printStackTrace();
@@ -147,7 +142,48 @@ public class SearchResultActivity extends AppCompatActivity {
     private void getWeather() {
         for(int i=0;i<latitudeList.size();i++){
             WEATHERURL="https://api.darksky.net/forecast/91127ba2ca9e159767ac3aa34425dffd" +
-                    "/"+latitudeList.get(i)+","+longitudeList.get(i)+",2019-09-25T08:30:55?exclude=daily,hourly";
+                    "/"+latitudeList.get(i)+","+longitudeList.get(i)+","+travelDate+"T"+travelTime+":00?exclude=daily,hourly";
+            summaryList=new ArrayList<>();
+            predictionList=new ArrayList<>();
+            requestQueue= Volley.newRequestQueue(SearchResultActivity.this);
+            final AtomicInteger requestsCounter = new AtomicInteger(0);
+            //Log.d(TAG, "JSON Weather :" );
+            final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                    Request.Method.GET,
+                    WEATHERURL,
+                    null,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            //Log.d(TAG, "JSON ResponseBody :" + response);
+                            // Process the JSON
+                            try{
+                                // Get the JSON array
+                                JSONObject jsonResponse = response.getJSONObject("currently");
+                                String summary=jsonResponse.getString("summary");
+                                String prediction=jsonResponse.getString("precipType");
+                                Log.d(TAG, "summary : " + summary +"| prediction: "+prediction);
+                                summaryList.add(summary);
+                                predictionList.add(prediction);
+                                if (summaryList.size()==latitudeList.size()){
+                                    initData();
+                                }
+
+                            }catch (JSONException e){
+                                e.printStackTrace();
+                            }
+                        }
+                    },
+                    new Response.ErrorListener(){
+                        @Override
+                        public void onErrorResponse(VolleyError error){
+                            // Do something when error occurred
+                        }
+                    }
+            );
+
+            // Add JsonObjectRequest to the RequestQueue
+            requestQueue.add(jsonObjectRequest);
         }
 
     }
@@ -155,11 +191,22 @@ public class SearchResultActivity extends AppCompatActivity {
     private void initData() {
         lisDataHeader =new ArrayList<>();
         listHashMap=new HashMap<>();
+        ArrayList<String> cityNames=new ArrayList<>();
+        ArrayList<String> filteredCityNames=new ArrayList<>();
+        DecodeAdress decodeAdress=new DecodeAdress();
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+
+        for(int i=0;i<latitudeList.size();i++){
+            cityNames.add(decodeAdress.getDecodedCityName(latitudeList.get(i),longitudeList.get(i),geocoder));
+        }
 
         lisDataHeader.add("Test1");
         lisDataHeader.add("Test2");
         lisDataHeader.add("Test3");
-
+        /**
+         * lisDataHeader=citynames
+         * details=summaryList,predictionList
+         * */
 
         List<String> details=new ArrayList<>();
         details.add("Details Test");
@@ -168,7 +215,24 @@ public class SearchResultActivity extends AppCompatActivity {
         details2.add("Details Test 2");
         details2.add("Details Test  2 22");
 
-        listHashMap.put(lisDataHeader.get(0),details);
-        listHashMap.put(lisDataHeader.get(1),details2);
+        for (int i = 0; i < summaryList.size(); i++) {
+            List<String> temp = new ArrayList<>();
+            if (!(cityNames.get(i).length()<=3))
+            {
+                filteredCityNames.add(cityNames.get(i));
+                temp.add("Weather Summary \t:  " + summaryList.get(i));
+                temp.add("Prediction \t\t\t\t:  " + predictionList.get(i));
+                listHashMap.put(cityNames.get(i), temp);
+                Log.d(TAG, "Hashmap " + temp);
+                Log.d(TAG, "cityNumber " + cityNames.get(i));
+            }
+            else {
+
+            }
+
+        }
+
+        expandableListAdapter=new ExpandableListAdapter(this,filteredCityNames,listHashMap);
+        expandableListView.setAdapter(expandableListAdapter);
     }
 }
