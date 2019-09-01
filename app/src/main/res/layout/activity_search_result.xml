@@ -4,19 +4,51 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingRight="16dp"
-    android:paddingLeft="16dp"
-    android:paddingBottom="16dp"
+    android:paddingRight="10dp"
+    android:paddingLeft="10dp"
+    android:paddingBottom="7dp"
     android:paddingTop="16dp"
     tools:context=".SearchResultActivity">
-
-    <ExpandableListView
-        android:id="@+id/lvExpandable"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+       <LinearLayout
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:orientation="vertical">
+           <RelativeLayout
+               android:layout_width="match_parent"
+               android:layout_height="match_parent">
+
+           <ExpandableListView
+               android:id="@+id/lvExpandable"
+               android:layout_width="match_parent"
+               android:layout_height="550dp">
+           </ExpandableListView>
+               <com.github.ybq.android.spinkit.SpinKitView
+                   android:id="@+id/spin_kit"
+                   style="@style/SpinKitView.Large.Circle"
+                   android:layout_width="150dp"
+                   android:layout_height="100dp"
+                   android:layout_gravity="center"
+                   android:layout_centerInParent="true"
+                   app:SpinKit_Color="@color/colorPrimary" />
+           </RelativeLayout>
+           <FrameLayout
+               android:id="@+id/frame"
+               android:layout_marginTop="40dp"
+               android:layout_width="match_parent"
+               android:layout_height="300dp"
+               />
+
+
+       </LinearLayout>
 
 
 
-    </ExpandableListView>
+
+
+
+    </ScrollView>
 
 </RelativeLayout>

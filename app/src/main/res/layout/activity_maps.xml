@@ -1,9 +1,12 @@
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/apk/res-auto"
     android:id="@+id/store_lay"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_gravity="bottom"
+    >
 
     <RelativeLayout
         android:id="@+id/location_lay"
@@ -284,6 +287,6 @@
         </LinearLayout>
     </RelativeLayout>
     <!-- Bottom Sheet -->
-    <include layout="@layout/fragment_directions_bottom_sheet" />
+
 
 </android.support.design.widget.CoordinatorLayout>

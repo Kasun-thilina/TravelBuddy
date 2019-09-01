@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -23,6 +24,7 @@ import android.widget.RelativeLayout;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.github.pedrovgs.DraggablePanel;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -63,8 +65,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int AUTOCOMPLETE_REQUEST_CODE_FOR_START=500;
     private static final int AUTOCOMPLETE_REQUEST_CODE_FOR_END=700;
     private Location location;
+    DraggablePanel draggablePanel;
 
-    Boolean locationFound=false;
     String apiKey ;
     View mapView;
     PlacesClient placesClient;
@@ -83,6 +85,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         etDrop=findViewById(R.id.etDrop_location);
         etTravelTime=findViewById(R.id.etTravel_Time);
         btnSearch=findViewById(R.id.btnSearch);
+
         requestPermissions();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -97,6 +100,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 addApi(LocationServices.API).
                 addConnectionCallbacks(this).
                 addOnConnectionFailedListener(this).build();
+        // TODO: Add a Paid Google API Key here or location search will be failed within 30 sec - 1 min gaps
         apiKey = getString(R.string.api_key);
         //Places API Client
         initPlacesAPI();
@@ -131,9 +135,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     values.putParcelable("startLocation", startLocation);
                     values.putParcelable("endLocation", endLocation);
                     searchActivityIntent.putExtra("locations",values);
-                    searchActivityIntent.putExtra("travelDate",finalDate);//YYYY-MM-DD
-                    searchActivityIntent.putExtra("travelTime",finalTime);//HH:MM
+                    searchActivityIntent.putExtra("travelDate",finalDate);//yyyy-MM-dd Specifically in this format
+                    searchActivityIntent.putExtra("travelTime",finalTime);//HH:MM Specifically in this format
                     startActivity(searchActivityIntent);
+                    //finish();
                 }
             }
         });
