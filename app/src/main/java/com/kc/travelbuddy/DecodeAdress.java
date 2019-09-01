@@ -57,6 +57,9 @@ public class DecodeAdress {
                 if (addresses.size()>0) {
                     Address returnAddress = addresses.get(0);
                     decodedCityName = returnAddress.getFeatureName();
+                    String tempdecodedCityName = returnAddress.getSubLocality();
+                    String locality = returnAddress.getLocality();
+                    Log.d("class","locality"+locality+"  ##"+tempdecodedCityName);
                 }
             }
         } catch (IOException e) {

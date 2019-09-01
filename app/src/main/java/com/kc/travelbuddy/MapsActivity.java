@@ -4,11 +4,13 @@ import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -38,6 +40,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
@@ -45,6 +48,7 @@ import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+import com.google.maps.android.PolyUtil;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -134,6 +138,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Bundle values = new Bundle();
                     values.putParcelable("startLocation", startLocation);
                     values.putParcelable("endLocation", endLocation);
+                    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putString("startLocationLat",String.valueOf(startLocation.latitude)).commit();
+                    editor.putString("startLocationLng",String.valueOf(startLocation.longitude)).commit();
+                    editor.putString("endLocationLat",String.valueOf(startLocation.latitude)).commit();
+                    editor.putString("endLocationLng",String.valueOf(startLocation.longitude)).commit();
+                    WeatherDataStore weatherDataStore=new WeatherDataStore();
+                    weatherDataStore.setStartLocation(startLocation);
+                    weatherDataStore.setEndLocation(endLocation);
                     searchActivityIntent.putExtra("locations",values);
                     searchActivityIntent.putExtra("travelDate",finalDate);//yyyy-MM-dd Specifically in this format
                     searchActivityIntent.putExtra("travelTime",finalTime);//HH:MM Specifically in this format
@@ -280,6 +293,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             requestPermissions();
             return;
         }
+
         mMap.setMyLocationEnabled(true);
         if (mapView != null &&
                 mapView.findViewById(Integer.parseInt("1")) != null) {
@@ -367,7 +381,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                         String strHrsToShow = (travelTime.get(Calendar.HOUR) == 0) ?"12":travelTime.get(Calendar.HOUR)+"";
                         //etTravelTime.setText( strHrsToShow+":"+travelTime.get(Calendar.MINUTE)+" "+am_pm);
-                        finalTime=selectedHour+":"+selectedMinute;
+                        finalTime=String.format("%02d:%02d", selectedHour, selectedMinute);
+                        Log.d(TAG, "finalTime : "+finalTime);
                         etTravelTime.setText(finalTime);
 
                     }

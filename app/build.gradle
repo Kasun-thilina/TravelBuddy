@@ -46,6 +46,9 @@ dependencies {
     //Loading Animation
     implementation 'com.github.ybq:Android-SpinKit:1.4.0'
 
+    //Anychart
+    implementation 'com.github.AnyChart:AnyChart-Android:1.1.2'
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
